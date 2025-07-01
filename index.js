@@ -1,5 +1,6 @@
 import htmlToJson from "./htmlToJson.js"
 import fs from "node:fs"
+import iconv from "iconv-lite"
 
 import axios from "axios"
 
@@ -16,7 +17,9 @@ import axios from "axios"
 //         console.log(err);
 //     })
 
-fs.readFile("./read_archives/entrada.html", "utf-8", (err, data) => {
+// è so pra definir a entrada pra um arquivo
+fs.readFile("./read_archives/entrada.html", (err, data) => {
     if (err) throw err;
-    htmlToJson(data);
+    let decoded_file = iconv.decode(data, "windows-1252");
+    htmlToJson(iconv.encode(decoded_file, "utf-8"));
 })
