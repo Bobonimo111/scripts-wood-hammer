@@ -1,0 +1,15 @@
+Casos aceitaveis artigos
+<a name="art40.0"></a>
+<a name="art82.0"></a>
+<a name="art1"></a>
+<a name="art10"></a>
+<a name="art6.."></a>
+<a name="art6..."></a>
+<a name="art6...."></a>
+<a name="art10."></a>
+
+Casos não aceitaveis artigos
+<a name="art6ii"></a>
+<a name="art1capituloii"></a>
+
+============================================================

@@ -6,7 +6,7 @@ import fs from "node:fs"
 function htmlToJson(html) {
 
 
-    // Aq começamos a brincadeira
+    // Aq começamos a brincadeira, injetamos uma string com tags html
     const $ = cheerio.load(html);
 
     let capturas = $("body").find("p, div, blockquote")
@@ -16,13 +16,12 @@ function htmlToJson(html) {
     let ultimo_titulo = null;
     let ultimo_artigo = null;
 
-    let art_regex = /<a name="art[0-9]+(\.\.\.)?">/i;
+    let art_regex = /<a\s+name="art\d+(?:\.(?:\d+)?|\.{2,4})?">/i;
     capturas.each((index, el) => {
 
         if ($(el).find("strike") > 0) {
             return null;
         }
-
         const nome = $(el).html() || "";
         // Titulo
         if (new RegExp("\\bt.tulo\\s*[ivxlcdm]+\\b", "i").test(nome)
@@ -33,20 +32,24 @@ function htmlToJson(html) {
         // Artigo 
         else if ($(el).attr("id") == "art") {
             $(el).children("p").each((index, artHtml) => {
-                // console.log($(artHtml).text())
-                if (art_regex.test($(artHtml).html())) {
-                    ultimo_artigo = $(artHtml).find("a[name]").eq(1).attr("name");
-                    objeto[ultimo_titulo][ultimo_artigo] = { "texto": $(artHtml).text().trim(), "paragrafos": [] }
-                } else {
-                    objeto[ultimo_titulo][ultimo_artigo]["paragrafos"].push(
-                        $(artHtml).text().replace(/[\r\n\t]+/g, '').trim()
-                    );
+                // Não pegar itens do strike
+                if ($(artHtml).find("strike") == 0) {
+                    if (art_regex.test($(artHtml).html())) {
+                        let index_artigo = ($(artHtml).find("a[name]").eq(1).attr("name") == undefined) ?
+                            $(artHtml).find("a[name]").eq(0).attr("name") :
+                            $(artHtml).find("a[name]").eq(1).attr("name");
+                        ultimo_artigo = index_artigo;
+                        objeto[ultimo_titulo][index_artigo] = {
+                            "texto": $(artHtml).text().replace(/[\r\n\t]+/g, '').trim(),
+                            "paragrafos": []
+                        }
+                    } else {
+                        objeto[ultimo_titulo][ultimo_artigo]["paragrafos"].push(
+                            $(artHtml).text().replace(/[\r\n\t]+/g, '').trim()
+                        );
+                    }
                 }
-
             })
-            // throw new error();
-            // console.log(artigo_encontrado.text());
-            // writeFile(artigo_encontrado.text());
         }
 
         // pargrafos
